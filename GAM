@@ -1,0 +1,51 @@
+> out11 <- gam(outcomeEmployed~s(ageAtAdmission)+usedDrugs+wasIncarcerated+educationLevel+militaryServed+married, family=binomial, traningdata) 
+> plot(out11, pages=1, all.plots=T)
+
+Appendix 1
+> summary(out11)
+
+Family: binomial 
+Link function: logit 
+
+Formula:
+outcomeEmployed ~ s(ageAtAdmission) + usedDrugs + wasIncarcerated + 
+    educationLevel + militaryServed + married
+
+Parametric coefficients:
+                        Estimate Std. Error z value Pr(>|z|)    
+(Intercept)             -1.06957    0.09935 -10.766  < 2e-16 ***
+usedDrugs                0.16543    0.09441   1.752  0.07972 .  
+wasIncarcerated         -0.01140    0.07761  -0.147  0.88319    
+educationLevelHigher Ed  0.10758    0.16544   0.650  0.51553    
+educationLevelNo GED    -0.20170    0.07255  -2.780  0.00544 ** 
+militaryServed          -0.08037    0.10841  -0.741  0.45848    
+married                 -0.12896    0.13182  -0.978  0.32795    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+Approximate significance of smooth terms:
+                    edf Ref.df Chi.sq  p-value    
+s(ageAtAdmission) 6.469  7.552     74 7.35e-13 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+R-sq.(adj) =  0.0197   Deviance explained = 2.09%
+UBRE score = 0.14366  Scale est. = 1         n = 4608
+
+Appendix 2
+load("Paper2Data.rdata")
+attach("Paper2Data.rdata")
+which(ageAtAdmission<0)
+data <- data.frame(Paper2Data)
+cleandata <- data[-77,]
+attach(cleandata)
+split <- sample(1:9217, 9217/2, replace=F)
+testdata <- cleandata[split,]
+trainingdata <- cleandata[-split,]
+library(mgcv)
+out11 <- gam(outcomeEmployed~s(ageAtAdmission)+married+militaryServed+educationLevel+usedDrugs+wasIncarcerated, traningdata, family=binomial)
+predicted <- predict.gam(out11, type="response", testdata)
+predicted.50 <- ifelse(predicted>.278,1,0)
+table(testdata$outcomeEmployed, predicted.50)
+predicted.75 <- ifelse(predicted>.318,1,0)
+table(testdata$outcomeEmployed, predicted.75)
