@@ -1,0 +1,23 @@
+Julian <- as.Date(MostRecent)
+RealDate <- (as.numeric(Julian)/365)+1970
+Paper3Data$RealDate <- RealDate 
+nuevaData <- Paper3Data[,-6]
+na.omit(nuevaData)
+attach(nuevaData)
+rm(index)
+na.omit(nuevaData)
+index <- sample(1:190267, 5000, replace=F)
+train <- nuevaData[index,]
+out2 <- randomForest(Fail02Serious ~ AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate, data=train, importance=T, sampsize=c(380, 380), na.action=na.omit)
+out2
+out5 <- randomForest(Fail02Serious ~ AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate, data=train, importance=T, sampsize=c(310, 380), na.action=na.omit)
+out5
+out6 <- randomForest(Fail02Serious ~ AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate, data=train, importance=T, sampsize=c(210, 380), na.action=na.omit)
+out6
+out7 <- randomForest(Fail02Serious ~ AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate, data=train, importance=T, sampsize=c(250, 380), na.action=na.omit)
+out7
+predict3 <-predict(out3, nuevaData[-index, ], type="response", norm.votes=TRUE, predict.all=FALSE, proximity=FALSE, nodes=FALSE)
+table(observed = nuevaData$Fail02Serious[-index], predicted = predict3)
+varImpPlot(out3, scale=F, type=1, class="TRUE")
+varImpPlot(out3, scale=F, type=1, class="FALSE")
+partialPlot(out3, pred.data=train, ArrAge, which.class="TRUE", rug=T)
