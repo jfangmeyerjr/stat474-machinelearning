@@ -1,0 +1,24 @@
+attach(bData)
+btrain$bFail[btrain$bFail<0] <- 0
+bData$bFail[bData$bFail<0] <- 0
+bout1 <-   gbm(bFail~AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealD ate,data=btrain, distribution= "bernoulli", n.trees=6500,  interaction.depth= 2, cv.folds=5)
+bout2 <- gbm(bFail~AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate,data=btrain, distribution= "bernoulli", n.trees=4837, interaction.depth= 2, cv.folds=5)
+bout3 <- gbm(bFail~AdultPriorsSeriousCount+ArrAge+Black+Male+FirstAdultAge+RealDate,data=btrain, distribution= "bernoulli", n.trees=2709, interaction.depth= 2, cv.folds=5)
+gbm.perf(bout1, method="cv")
+gbm.perf(bout1, method="OOB")
+bPredict1 <- predict(bout2, newdata=bData[-index,], n.trees=6500, type="response")
+bPredict2 <- predict(bout2, newdata=bData[-index,], n.trees=4837, type="response")
+bPredict3 <- predict(bout2, newdata=bData[-index,], n.trees=2709, type="response")
+#bPredict2
+summary(bPredict2)
+table(bTest$bFail, bPredict2>.1)
+table(bTest$bFail, bPredict2>.08)
+table(bTest$bFail, bPredict2>.11)
+summary(bout2) #Relative importance
+permutation.test.gbm(bout1, n.trees= 1000)
+plot(bout2,i.var=1)
+plot(bout2,i.var=2)
+plot(bout2,i.var=3)
+plot(bout2,i.var=4)
+plot(bout2,i.var=5)
+plot(bout2,i.var=6)
